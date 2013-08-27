@@ -1,5 +1,6 @@
 EventEmitter = require('events').EventEmitter
 GraphBuilder = require "./graphbuilder"
+debug = require('debug')('Flowrace')
 
 ###
 # Class Flowrace - Provides the external interface for processing
@@ -18,6 +19,7 @@ class Flowrace extends EventEmitter
       startsCompleted: 0
       dataEvents: 0
     @_graph = null
+    @running = false
 
   # Returns the internally prepared graph
   graph: () ->
@@ -28,8 +30,10 @@ class Flowrace extends EventEmitter
   # config: can be either a valid JSON object or parsable string
   #
   run: (config) ->
+    debug 'Running config', config
     @_graph = @_buildGraph config
     @_bindEvents @_graph
+    @running = true
     @emit 'start'
     @_graph.start()
 
@@ -37,9 +41,10 @@ class Flowrace extends EventEmitter
   # 
   # config: can be either a valid JSON object or a parsable string
   _buildGraph: (config) ->
+    debug 'Building graph', config
     @_graph = GraphBuilder::parse config, @_moduleTypes
     for id, module of @_graph.modules
-      @_counts.starts++ if module.config.start
+      @_counts.starts++ if module.data.start
     return @_graph
 
   # Bind to the data and complete events on links and modules.
@@ -47,26 +52,37 @@ class Flowrace extends EventEmitter
   # graph: a valid graph object
   # 
   _bindEvents: (graph) ->
-    for id, link of graph.links
-      do (link) =>
-        link.on 'dataReceived', (data, source, dest) =>
-          @_counts.dataEvents++
-          @emit 'data', data, source, dest
+    debug 'Binding events', graph
 
     for id, module of graph.modules
       do (module) =>
-        module.on 'complete', () => 
-          @_counts.completeEvents++ if not module.config.start
-          @_counts.startsCompleted++ if module.config.start
+        module.on 'data', (data) =>
+          @_counts.dataEvents++
+          debug 'Emitting Flow::data event'
+          @emit 'data', data, module
+          debug 'data counts =', @_counts  
+
+        module.on 'complete', (error) => 
+          if error
+            debug 'Emitting error', error.toString()
+            @emit 'error', error, module
+            @running = false
+            return @emit 'end' 
+          @_counts.completeEvents++
+          @_counts.startsCompleted++ if module.data.start      
           if @_counts.completeEvents >= @_counts.dataEvents and @_counts.startsCompleted is @_counts.starts
-            @emit 'end' 
+            debug 'Emitting Flow::end event'
+            @emit 'end' if @running 
+          debug 'complete counts =', @_counts  
+
 
   # Register a module for use by the flow. This needs to be done before you load the flow config.
   #
-  # name: a unique name for the module, referenced in the 'type' field of your flow config.
+  # className: a unique name for the module, referenced in the 'type' field of your flow config.
   # module: a valid class extending the Flowrace.Module class
   #  
-  use: (name, module) ->
-    @_moduleTypes[name] = module
+  use: (className, module) ->
+    debug 'Adding module', className
+    @_moduleTypes[className] = module
 
 module.exports = Flowrace

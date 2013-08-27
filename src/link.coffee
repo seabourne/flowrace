@@ -13,7 +13,7 @@ class Link extends EventEmitter
   constructor: (source, dest) ->
     @source = source
     @dest = dest
-    @dest.attach @
+    @dest.attach @ if @dest.attach
 
   # Creates the connection between the source and dest
   connect: () ->
@@ -24,11 +24,11 @@ class Link extends EventEmitter
   disconnect: () ->
     @emit 'disconnect', @source, @dest
     @source.off 'data', @onData
-    @dest.detach @
+    @dest.detach @ if @dest.detach
 
   # Sends the data packet through to the dest.
   onData: (data) =>
-    @emit 'dataReceived', @source
+    @emit 'dataReceived', data, @source, @dest
     process.nextTick => @emit 'data', data, @source, @dest
 
 module.exports = Link

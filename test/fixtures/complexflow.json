@@ -2,21 +2,21 @@
   "modules": [
     {
       "id": "input1",
-      "type": "module1",
+      "class": "module1",
       "start": true
     },
     {
       "id": "input2",
-      "type": "module1",
+      "class": "module1",
       "start": true
     },
     {
       "id": "processor1",
-      "type": "module2"
+      "class": "module2"
     },
     {
       "id": "processor2",
-      "type": "module2"
+      "class": "module2"
     }
   ],
   "links": [

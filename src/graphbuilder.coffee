@@ -11,7 +11,7 @@ class GraphBuilder extends EventEmitter
   #
   # config: a valid graph JSON object or parsable string
   # modules: an object of modules to use to instantiate the Graph, in the form 
-  #   of {name: type}
+  #   of {name: class}
   parse: (config, modules) ->
     graph = new Graph
 
@@ -22,15 +22,15 @@ class GraphBuilder extends EventEmitter
         throw new Error 'Config must be a valid JSON object'
 
     for mod in config.modules
-      type = mod.type
-      throw new Error 'Module must have a type' unless type
-      if not modules[type]
+      className = mod.class
+      throw new Error 'Module must have a class' unless className
+      if not modules[className]
         try
-          instance = require type
+          instance = require className
         catch e
-          throw new Error "Module type #{type} not found"
+          throw new Error "Module class #{className} not found"
       else 
-        instance = new modules[type](mod)
+        instance = new modules[className](mod)
       graph.modules[mod.id] = instance
 
     for link in config.links
@@ -38,8 +38,23 @@ class GraphBuilder extends EventEmitter
       dest = graph.modules[link.dest]
       newLink = new Link source, dest
       graph.links[link.id] = newLink
-      newLink.connect()
-
+    
     graph
+
+  export: (graph) ->
+    obj = 
+      modules: []
+      links: []
+
+    for id, module of graph.modules
+      obj.modules.push module
+
+    for id, link of graph.links
+      obj.links.push 
+        id: id
+        source: link.source.data.id
+        dest: link.dest.data.id
+
+    obj
 
 module.exports = GraphBuilder    

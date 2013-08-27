@@ -9,7 +9,7 @@ class Module extends EventEmitter
   # 
   # config: an optional configuration hash
   #
-  constructor: (@config = {}) ->
+  constructor: (@data = {}) ->
 
   # Attaches the link to the module
   attach: (link) ->
@@ -23,8 +23,15 @@ class Module extends EventEmitter
 
   # Processes data
   process: (data) =>
+    @done data
+    do @complete
+
+  done: (data) ->
     @emit 'data', data
-    @emit 'complete'
+
+  complete: (error) ->
+    process.nextTick =>
+      @emit 'complete', error 
 
   # Starts the processing. This should be implemented by the final classes.
   start: () ->

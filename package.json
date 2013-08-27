@@ -20,5 +20,8 @@
   "devDependencies": {
     "should": "~1.2.2",
     "underscore": "~1.5.1"
+  },
+  "dependencies": {
+    "debug": "~0.7.2"
   }
 }
