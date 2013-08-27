@@ -17,12 +17,12 @@ class Link extends EventEmitter
 
   # Creates the connection between the source and dest
   connect: () ->
-    @emit 'connect', source, dest
+    @emit 'connect', @source, @dest
     @source.on 'data', @onData
 
   # Removes the connection between the source and dest
   disconnect: () ->
-    @emit 'disconnect', source, dest
+    @emit 'disconnect', @source, @dest
     @source.off 'data', @onData
     @dest.detach @
 
