@@ -2,8 +2,16 @@ EventEmitter = require('events').EventEmitter
 Link = require "./link"
 Graph = require "./graph"
 
+###
+# Class GraphBuilder - parses a Graph JSON object and builds the Graph Object.
+###
 class GraphBuilder extends EventEmitter
 
+  # Parses the config JSON object or string and returns a Graph object
+  #
+  # config: a valid graph JSON object or parsable string
+  # modules: an object of modules to use to instantiate the Graph, in the form 
+  #   of {name: type}
   parse: (config, modules) ->
     graph = new Graph
 
@@ -30,6 +38,7 @@ class GraphBuilder extends EventEmitter
       dest = graph.modules[link.dest]
       newLink = new Link source, dest
       graph.links[link.id] = newLink
+      newLink.connect()
 
     graph
 
