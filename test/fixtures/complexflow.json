@@ -1,0 +1,39 @@
+{
+  "modules": [
+    {
+      "id": "input1",
+      "type": "module1",
+      "start": true
+    },
+    {
+      "id": "input2",
+      "type": "module1",
+      "start": true
+    },
+    {
+      "id": "processor1",
+      "type": "module2"
+    },
+    {
+      "id": "processor2",
+      "type": "module2"
+    }
+  ],
+  "links": [
+    {
+      "id": 0,
+      "source": "input1",
+      "dest": "processor1"
+    },
+    {
+      "id": 1,
+      "source": "input2",
+      "dest": "processor1"
+    },
+    {
+      "id": 2,
+      "source": "processor1",
+      "dest": "processor2"
+    }
+  ]
+}

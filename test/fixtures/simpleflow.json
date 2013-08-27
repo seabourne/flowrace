@@ -1,0 +1,20 @@
+{
+  "modules": [
+    {
+      "id": "module1",
+      "type": "module1",
+      "start": true
+    },
+    {
+      "id": "module2",
+      "type": "module2"
+    }
+  ],
+  "links": [
+    {
+      "id": 0,
+      "source": "module1",
+      "dest": "module2"
+    }
+  ]
+}

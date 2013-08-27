@@ -1,0 +1,24 @@
+{
+  "name": "flowrace",
+  "version": "0.0.0",
+  "description": "flowrace ========",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "NODE_ENV=test mocha --compilers coffee:coffee-script -R spec test/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/delray/flowrace.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "539be76ba13813ad035c0f93d288b02a9b549725",
+  "bugs": {
+    "url": "https://github.com/delray/flowrace/issues"
+  },
+  "devDependencies": {
+    "should": "~1.2.2",
+    "underscore": "~1.5.1"
+  }
+}
