@@ -1,5 +1,5 @@
 EventEmitter = require('events').EventEmitter
-
+debug = require('debug')('Flowrace')
 ###
 # Class Link - represents a connection between two modules
 ###
@@ -14,6 +14,15 @@ class Link extends EventEmitter
     @source = source
     @dest = dest
     @dest.attach @ if @dest.attach
+    @_count = 
+      source: 0
+      dest: 0
+    @dest.on 'complete', () =>
+      @_count.dest++
+
+  complete: () ->
+    debug 'count=',@_count
+    return @_count.source <= @_count.dest and @_count.source isnt 0 and ((@source.start and @source.completed) or not @source.start)
 
   # Creates the connection between the source and dest
   connect: () ->
@@ -28,6 +37,7 @@ class Link extends EventEmitter
 
   # Sends the data packet through to the dest.
   onData: (data) =>
+    @_count.source++
     @emit 'dataReceived', data, @source, @dest
     process.nextTick => @emit 'data', data, @source, @dest
 

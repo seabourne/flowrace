@@ -19,7 +19,7 @@ class Graph extends EventEmitter
     for key, mod of @modules
       if mod.data.start
         debug 'Starting module', mod
-        do mod.start
+        do mod.process
 
   connect: () ->
     return if @connected
