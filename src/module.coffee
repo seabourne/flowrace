@@ -10,37 +10,45 @@ class Module extends EventEmitter
   # config: an optional configuration hash
   #
   constructor: (@data = {}) ->
-    @completed = false
+    @isCompleted = false
 
   # Attaches the link to the module
   attach: (link) ->
     @emit 'attach', link
-    link.on 'data', @process
-    ###
+    #link.on 'data', @process if link
     link.on 'data', (data) =>
       try 
         @process data
       catch e
-        @emit 'complete', e
-    ###  
+        @complete "Error processing module: "+e
+
 
   # Detaches the link from the module
   detach: (link) ->
     @emit 'detach', link
-    link.off 'data', @process
+    link.removeListener 'data', @process if link
+
+  preprocess: () =>
+    do @complete
 
   # Processes data
   process: (data) =>
     @done data
     do @complete
 
+  postprocess: () =>
+    do @complete
+
   done: (data) ->
     @emit 'data', data
 
-  complete: (error) ->
+  complete: (error, data) ->
     process.nextTick =>
-      @completed = true
-      @emit 'complete', error 
+      @isCompleted = true
+      @emit 'complete', error, data
+
+  info: (message, data) ->
+    @emit 'info', message, data
 
   # Starts the processing. This should be implemented by the final classes.
   start: (cb) ->

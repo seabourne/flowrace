@@ -12,15 +12,39 @@ class Graph extends EventEmitter
     @links = {}
     @connected = false
 
-  # Runs any modules that have the 'start' config value
-  start: () ->
-    debug "Starting Graph"
-    do @connect unless @connected
+  preprocess: (cb) =>
+    debug 'preprocessing'
+    modules = []
+    for id, mod of @modules
+      modules.push mod
+      mod.once 'complete', () =>
+        if modules.length is 0
+          return cb() if cb
+        do modules.pop().preprocess
+
+    modules.pop().preprocess()
+
+  process: () =>
+    debug 'processing'
+    @connect()
     for key, mod of @modules
       if mod.data.start
-        debug 'Starting module', mod
+        debug 'processing module', mod
         do mod.process
 
+  postprocess: (cb) =>
+    @disconnect()
+    debug 'postprocessing'
+    modules = []
+    for id, mod of @modules
+      modules.push mod
+      mod.once 'complete', () =>
+        if modules.length is 0
+          return cb() if cb
+        do modules.pop().postprocess
+
+    modules.pop().postprocess()
+    
   connect: () ->
     return if @connected
     for id, link of @links

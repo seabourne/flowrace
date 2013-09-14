@@ -14,25 +14,29 @@ class Link extends EventEmitter
     @source = source
     @dest = dest
     @dest.attach @ if @dest.attach
-    @_count = 
-      source: 0
-      dest: 0
+    @_resetCounts()
     @dest.on 'complete', () =>
       @_count.dest++
 
+  _resetCounts: () ->
+    @_count = 
+      source: 0
+      dest: 0
+
   complete: () ->
     debug 'count=',@_count
-    return @_count.source <= @_count.dest and @_count.source isnt 0 and ((@source.start and @source.completed) or not @source.start)
+    return @_count.source <= @_count.dest and @_count.source isnt 0 and ((@source.start and @source.isCompleted) or not @source.start)
 
   # Creates the connection between the source and dest
   connect: () ->
+    @_resetCounts()
     @emit 'connect', @source, @dest
     @source.on 'data', @onData
 
   # Removes the connection between the source and dest
   disconnect: () ->
     @emit 'disconnect', @source, @dest
-    @source.off 'data', @onData
+    @source.removeListener 'data', @onData
     @dest.detach @ if @dest.detach
 
   # Sends the data packet through to the dest.

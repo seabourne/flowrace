@@ -31,4 +31,4 @@ describe "Link", ->
         done()
       link = new Link source, dest
       link.connect()
-      do source.start
+      do source.process

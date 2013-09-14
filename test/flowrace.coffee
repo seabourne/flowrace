@@ -10,26 +10,26 @@ describe "Flowrace", ->
   describe "Run", ->
     it "should run the config", (done) ->
       count = 0
-      flowrace = new Flowrace
+      flowrace = new Flowrace config
       flowrace.on 'data', (data) ->
         count++
         done() if count is 3
       flowrace.use 'module1', require "./fixtures/module1"
       flowrace.use 'module2', require "./fixtures/module2"
-      flowrace.run config
+      flowrace.run()
 
     it "should fire the start event", (done) ->
-      flowrace = new Flowrace
+      flowrace = new Flowrace config
       flowrace.on 'start', () ->
         done()
       flowrace.use 'module1', require "./fixtures/module1"
       flowrace.use 'module2', require "./fixtures/module2"
-      flowrace.run config
+      flowrace.run()
 
     it "should fire the end event", (done) ->
-      flowrace = new Flowrace
+      flowrace = new Flowrace config
       flowrace.on 'end', () ->
         done()
       flowrace.use 'module1', require "./fixtures/module1"
       flowrace.use 'module2', require "./fixtures/module2"
-      flowrace.run config
+      flowrace.run()
