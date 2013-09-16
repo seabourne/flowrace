@@ -28,6 +28,7 @@ class Graph extends EventEmitter
     debug 'processing'
     @connect()
     for key, mod of @modules
+      mod.isCompleted = false
       if mod.data.start
         debug 'processing module', mod
         do mod.process
@@ -37,6 +38,7 @@ class Graph extends EventEmitter
     debug 'postprocessing'
     modules = []
     for id, mod of @modules
+      mod.isCompleted = false
       modules.push mod
       mod.once 'complete', () =>
         if modules.length is 0

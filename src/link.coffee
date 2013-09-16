@@ -24,8 +24,10 @@ class Link extends EventEmitter
       dest: 0
 
   complete: () ->
-    debug 'count=',@_count
-    return @_count.source <= @_count.dest and @_count.source isnt 0 and ((@source.start and @source.isCompleted) or not @source.start)
+    debug 'completed=',@_count.source <= @_count.dest and @_count.source isnt 0 and ((@source.data.start and @source.isCompleted) or not @source.data.start)
+    debug 'source start=',@source.data.start
+    debug 'source iscompleted=',@source
+    return @_count.source <= @_count.dest and @_count.source isnt 0 and ((@source.data.start and @source.isCompleted) or not @source.data.start)
 
   # Creates the connection between the source and dest
   connect: () ->
